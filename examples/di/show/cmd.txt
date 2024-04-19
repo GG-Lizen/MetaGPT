@@ -1,0 +1,10 @@
+## 机器学习
+
+ML：python examples/di/machine_learning.py --use_case sales_forecast
+## OCR
+
+OCR：python examples/di/ocr_receipt.py
+
+## 文档生成
+
+教程文档：python examples/write_tutorial.py
