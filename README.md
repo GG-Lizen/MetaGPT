@@ -14,12 +14,12 @@
 
 ## How It Works
 
-- **`Connector` **: responsible for connecting the roles that execute tasks with the roles that prioritize them and start the process of task execution.
+- **`Connector`**: responsible for connecting the roles that execute tasks with the roles that prioritize them and start the process of task execution.
 - **`Executor`**: executes the actual task and calls the creator `Creator` to create a new task based on the execution result.
-- **`Creator` **: creates a new list of tasks based on the execution result to drive the task flow.
-- **`Sorter` **: prioritizes the order of tasks based on the task list to ensure that the team is moving towards the final goal.
+- **`Creator`**: creates a new list of tasks based on the execution result to drive the task flow.
+- **`Sorter`**: prioritizes the order of tasks based on the task list to ensure that the team is moving towards the final goal.
 
-![](docs/resources/data_flow .png)
+![image](docs/resources/data_flow.png)
 
 
 
