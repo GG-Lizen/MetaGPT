@@ -10,7 +10,8 @@
 
 import warnings
 from pathlib import Path
-from typing import Any, Optional,Dict,List
+from typing import Any, Optional
+
 from pydantic import BaseModel, ConfigDict, Field
 
 from metagpt.actions import UserRequirement
@@ -39,8 +40,6 @@ class Team(BaseModel):
     env: Optional[Environment] = None
     investment: float = Field(default=10.0)
     idea: str = Field(default="")
-    content: str = Field(default="")#dict = Field(default_factory=dict)
-
 
     def __init__(self, context: Context = None, **data: Any):
         super(Team, self).__init__(**data)
@@ -57,8 +56,10 @@ class Team(BaseModel):
     def serialize(self, stg_path: Path = None):
         stg_path = SERDESER_PATH.joinpath("team") if stg_path is None else stg_path
         team_info_path = stg_path.joinpath("team.json")
+        serialized_data = self.model_dump()
+        serialized_data["context"] = self.env.context.serialize()
 
-        write_json_file(team_info_path, self.model_dump())
+        write_json_file(team_info_path, serialized_data)
 
     @classmethod
     def deserialize(cls, stg_path: Path, context: Context = None) -> "Team":
@@ -72,6 +73,7 @@ class Team(BaseModel):
 
         team_info: dict = read_json_file(team_info_path)
         ctx = context or Context()
+        ctx.deserialize(team_info.pop("context", None))
         team = Team(**team_info, context=ctx)
         return team
 
@@ -103,16 +105,6 @@ class Team(BaseModel):
             Message(role="Human", content=idea, cause_by=UserRequirement, send_to=send_to or MESSAGE_ROUTE_TO_ALL),
             peekable=False,
         )
-    def run_project_MBA(self, content, send_to: str = ""):
-        """Run a project from publishing user requirement."""
-        self.content = content
-
-        # Human requirement.
-        self.env.publish_message(
-            Message(role="Human",content_MBA=content, cause_by=UserRequirement, send_to=send_to or MESSAGE_ROUTE_TO_ALL),
-            peekable=False,
-        )
-
 
     def start_project(self, idea, send_to: str = ""):
         """
@@ -127,9 +119,6 @@ class Team(BaseModel):
         )
         return self.run_project(idea=idea, send_to=send_to)
 
-    def _save(self):
-        logger.info(self.model_dump_json())
-
     @serialize_decorator
     async def run(self, n_round=3, idea="", send_to="", auto_archive=True):
         """Run company until target round or no money"""
@@ -137,11 +126,10 @@ class Team(BaseModel):
             self.run_project(idea=idea, send_to=send_to)
 
         while n_round > 0:
-            # self._save()
             n_round -= 1
-            logger.debug(f"max {n_round=} left.")
             self._check_balance()
-
             await self.env.run()
+
+            logger.debug(f"max {n_round=} left.")
         self.env.archive(auto_archive)
         return self.env.history
