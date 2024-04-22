@@ -4,7 +4,7 @@
 
 
 <p align="center">
-<a href=""><img src="README.assets/M&BA-logo.png" alt="M&BA logo" width="600px"></a>
+<a href=""><img src="docs/resources/M&BA-logo.png" alt="M&BA logo" width="600px"></a>
 </p>
 
 <p align="center">
