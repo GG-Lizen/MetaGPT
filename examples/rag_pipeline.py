@@ -50,7 +50,7 @@ class RAGExample:
         if not self._engine:
             self._engine = SimpleEngine.from_docs(
                 input_files=[DOC_PATH],
-                retriever_configs=[FAISSRetrieverConfig()],
+                retriever_configs=[FAISSRetrieverConfig(dimensions=768)],
                 ranker_configs=[LLMRankerConfig()],
             )
         return self._engine
@@ -103,10 +103,10 @@ class RAGExample:
         travel_question = f"{TRAVEL_QUESTION}{LLM_TIP}"
         travel_filepath = TRAVEL_DOC_PATH
 
-        logger.info("[Before add docs]")
+        logger.info("\033[0m[Before add docs]")
         await self.run_pipeline(question=travel_question, print_title=False)
 
-        logger.info("[After add docs]")
+        logger.info("\033[0m[After add docs]")
         self.engine.add_docs([travel_filepath])
         await self.run_pipeline(question=travel_question, print_title=False)
 
@@ -133,16 +133,16 @@ class RAGExample:
         player = Player(name="Mike")
         question = f"{player.rag_key()}"
 
-        logger.info("[Before add objs]")
+        logger.info("\033[0m[Before add objs]")
         await self._retrieve_and_print(question)
 
-        logger.info("[After add objs]")
+        logger.info("\033[0m[After add objs]")
         self.engine.add_objs([player])
 
         try:
             nodes = await self._retrieve_and_print(question)
 
-            logger.info("[Object Detail]")
+            logger.info("\033[0m[Object Detail]")
             player: Player = nodes[0].metadata["obj"]
             logger.info(player.name)
         except Exception as e:
@@ -156,7 +156,7 @@ class RAGExample:
         self._print_title("Init Objects")
 
         pre_engine = self.engine
-        self.engine = SimpleEngine.from_objs(retriever_configs=[FAISSRetrieverConfig()])
+        self.engine = SimpleEngine.from_objs(retriever_configs=[FAISSRetrieverConfig(dimensions=768)])
         await self.add_objects(print_title=False)
         self.engine = pre_engine
 
@@ -207,24 +207,24 @@ class RAGExample:
 
     @staticmethod
     def _print_title(title):
-        logger.info(f"{'#'*30} {title} {'#'*30}")
+        logger.info(f"\033[0m{'#'*30} {title} {'#'*30}")
 
     @staticmethod
     def _print_retrieve_result(result):
         """Print retrieve result."""
-        logger.info("Retrieve Result:")
+        logger.info("\033[0mRetrieve Result:")
 
         for i, node in enumerate(result):
-            logger.info(f"{i}. {node.text[:10]}..., {node.score}")
+            logger.info(f"\033[0m{i}. {node.text[:10]}..., {node.score}")
 
         logger.info("")
 
     @staticmethod
     def _print_query_result(result):
         """Print query result."""
-        logger.info("Query Result:")
+        logger.info("\033[0m Query Result:")
 
-        logger.info(f"{result}\n")
+        logger.info(f"\033[0m {result}\n")
 
     async def _retrieve_and_print(self, question):
         nodes = await self.engine.aretrieve(question)
