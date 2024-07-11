@@ -91,6 +91,9 @@ class SearchEngine(BaseModel):
         elif self.engine == SearchEngineType.BING:
             module = "metagpt.tools.search_engine_bing"
             run_func = importlib.import_module(module).BingAPIWrapper(**kwargs).run
+        elif self.engine == SearchEngineType.SEARXNG:
+            module = "metagpt.tools.search_engine_searxng"
+            run_func = importlib.import_module(module).SearXNGWrapper(**kwargs).run
         else:
             raise NotImplementedError
         self.run_func = run_func
